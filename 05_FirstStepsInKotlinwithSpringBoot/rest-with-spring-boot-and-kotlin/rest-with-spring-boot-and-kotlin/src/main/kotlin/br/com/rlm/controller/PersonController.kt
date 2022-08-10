@@ -1,80 +1,54 @@
 package br.com.rlm.controller
 
-import br.com.rlm.converters.NumberConverter
-import br.com.rlm.exceptions.UnsupportedMathOperationException
-import br.com.rlm.math.SimpleMath
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-import java.util.concurrent.atomic.AtomicLong
+import br.com.rlm.data.vo.v1.PersonVO
+import br.com.rlm.model.Person
+import br.com.rlm.services.PersonService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @RestController
-class MathController {
+@RequestMapping("/person")
+class PersonController {
 
-    val counter: AtomicLong = AtomicLong()
+    @Autowired
+    private lateinit var service: PersonService
 
-    private val math: SimpleMath = SimpleMath()
-
-    @RequestMapping(value = ["/sum/{numberOne}/{numberTwo}"])
-    fun sum(
-        @PathVariable(value = "numberOne") numberOne: String?,
-        @PathVariable(value = "numberTwo") numberTwo: String?
-    ): Double {
-        if (!NumberConverter.isNumeric(numberOne) || !NumberConverter.isNumeric(numberTwo)) throw UnsupportedMathOperationException(
-            "Valor invalido, informe um valor númerico"
-        )
-        return math.sum(NumberConverter.convertToDouble(numberOne),  NumberConverter.convertToDouble(numberTwo))
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun findAll(): List<PersonVO> {
+        return service.findAll()
     }
 
-    @RequestMapping(value = ["/subtraction/{numberOne}/{numberTwo}"])
-    fun subtraction(
-        @PathVariable(value = "numberOne") numberOne: String?,
-        @PathVariable(value = "numberTwo") numberTwo: String?
-    ): Double {
-        if (!NumberConverter.isNumeric(numberOne) || !NumberConverter.isNumeric(numberTwo)) throw UnsupportedMathOperationException(
-            "Valor invalido, informe um valor númerico"
-        )
-        return math.subtraction(NumberConverter.convertToDouble(numberOne), NumberConverter.convertToDouble(numberTwo))
+    @GetMapping("/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun findById(
+        @PathVariable(value = "id") id: Long,
+    ): PersonVO {
+        return service.findById(id)
     }
 
-    @RequestMapping(value = ["/multiplication/{numberOne}/{numberTwo}"])
-    fun multiplication(
-        @PathVariable(value = "numberOne") numberOne: String?,
-        @PathVariable(value = "numberTwo") numberTwo: String?
-    ): Double {
-        if (!NumberConverter.isNumeric(numberOne) || !NumberConverter.isNumeric(numberTwo)) throw UnsupportedMathOperationException(
-            "Valor invalido, informe um valor númerico"
-        )
-        return math.multiplication(NumberConverter.convertToDouble(numberOne), NumberConverter.convertToDouble(numberTwo))
+    @PostMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun create(@RequestBody person: PersonVO): ResponseEntity<PersonVO> {
+        service.create(person)
+        return ResponseEntity.status(HttpStatus.CREATED).body(person)
     }
 
-    @RequestMapping(value = ["/division/{numberOne}/{numberTwo}"])
-    fun division(
-        @PathVariable(value = "numberOne") numberOne: String?,
-        @PathVariable(value = "numberTwo") numberTwo: String?
-    ): Double {
-        if (!NumberConverter.isNumeric(numberOne) || !NumberConverter.isNumeric(numberTwo)) throw UnsupportedMathOperationException(
-            "Valor invalido, informe um valor númerico"
-        )
-        return math.division(NumberConverter.convertToDouble(numberOne), NumberConverter.convertToDouble(numberTwo))
+    @PutMapping(
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun update(@RequestBody person: PersonVO): PersonVO {
+        return service.update(person)
     }
 
-    @RequestMapping(value = ["/mean/{numberOne}/{numberTwo}"])
-    fun mean(
-        @PathVariable(value = "numberOne") numberOne: String?,
-        @PathVariable(value = "numberTwo") numberTwo: String?
-    ): Double {
-        if (!NumberConverter.isNumeric(numberOne) || !NumberConverter.isNumeric(numberTwo)) throw UnsupportedMathOperationException(
-            "Valor invalido, informe um valor númerico"
-        )
-        return math.mean(NumberConverter.convertToDouble(numberOne), NumberConverter.convertToDouble(numberTwo))
-    }
+    @DeleteMapping("/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun delete(@PathVariable(value = "id") id: Long): ResponseEntity<*> {
+        service.delete(id)
+        return ResponseEntity.noContent().build<Any>()
 
-    @RequestMapping(value = ["/squareRoot/{number}"])
-    fun squareRoot(
-        @PathVariable(value = "number") number: String?
-    ): Double {
-        if (!NumberConverter.isNumeric(number)) throw UnsupportedMathOperationException("Valor invalido, informe um valor númerico")
-        return math.squareRoot(NumberConverter.convertToDouble(number))
     }
 }

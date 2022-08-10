@@ -1,1 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://localhost:3306/rest_with_spring_and_kotlin?createDatabaseIfNotExist=true
+    username: root
+    password: 100698@Ra
+  jackson:
+    default-property-inclusion: non_null
 
