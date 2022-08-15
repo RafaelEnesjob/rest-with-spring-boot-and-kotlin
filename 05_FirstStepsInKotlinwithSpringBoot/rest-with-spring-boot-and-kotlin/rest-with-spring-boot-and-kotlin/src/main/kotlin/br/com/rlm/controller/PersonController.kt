@@ -1,7 +1,6 @@
 package br.com.rlm.controller
 
 import br.com.rlm.data.vo.v1.PersonVO
-import br.com.rlm.model.Person
 import br.com.rlm.services.PersonService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -10,7 +9,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/person/v1")
 class PersonController {
 
     @Autowired
